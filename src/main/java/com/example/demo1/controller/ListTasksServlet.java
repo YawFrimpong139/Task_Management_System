@@ -19,13 +19,6 @@ public class ListTasksServlet extends HttpServlet {
         taskDAO = new TaskDAO();
     }
 
-//    @Override
-//    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-//            throws ServletException, IOException {
-//        List<Task> tasks = taskDAO.getAllTasks();
-//        request.setAttribute("tasks", tasks);
-//        request.getRequestDispatcher("/views/list-tasks.jsp").forward(request, response);
-//    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
