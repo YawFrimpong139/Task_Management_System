@@ -139,4 +139,46 @@ public class TaskDAO {
             throw new RuntimeException("Error deleting task with id: " + id, e);
         }
     }
+
+
+    public List<Task> getFilteredAndSortedTasks(String statusFilter, String sortOrder) {
+        List<Task> tasks = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM task");
+
+        // Filtering
+        if (statusFilter != null && !statusFilter.isEmpty() && !statusFilter.equalsIgnoreCase("All")) {
+            sql.append(" WHERE status = ?");
+        }
+
+        // Sorting
+        if (sortOrder != null && (sortOrder.equalsIgnoreCase("ASC") || sortOrder.equalsIgnoreCase("DESC"))) {
+            sql.append(" ORDER BY due_date ").append(sortOrder);
+        }
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            if (sql.toString().contains("WHERE")) {
+                stmt.setString(1, statusFilter);
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Task task = new Task(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getDate("due_date"),
+                            rs.getString("status")
+                    );
+                    tasks.add(task);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving filtered/sorted tasks", e);
+        }
+
+        return tasks;
+    }
+
 }

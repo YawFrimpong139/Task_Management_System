@@ -19,11 +19,36 @@ public class ListTasksServlet extends HttpServlet {
         taskDAO = new TaskDAO();
     }
 
+//    @Override
+//    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+//            throws ServletException, IOException {
+//        List<Task> tasks = taskDAO.getAllTasks();
+//        request.setAttribute("tasks", tasks);
+//        request.getRequestDispatcher("/views/list-tasks.jsp").forward(request, response);
+//    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<Task> tasks = taskDAO.getAllTasks();
+
+        String statusFilter = request.getParameter("status");
+        String sortOrder = request.getParameter("sort");
+
+        if (statusFilter == null || statusFilter.isEmpty()) {
+            statusFilter = "All";
+        }
+        if (sortOrder == null || sortOrder.isEmpty()) {
+            sortOrder = "ASC";
+        }
+
+        List<Task> tasks = taskDAO.getFilteredAndSortedTasks(statusFilter, sortOrder);
+
         request.setAttribute("tasks", tasks);
+        request.setAttribute("selectedStatus", statusFilter);
+        request.setAttribute("selectedSort", sortOrder);
+
         request.getRequestDispatcher("/views/list-tasks.jsp").forward(request, response);
     }
+
+
 }
